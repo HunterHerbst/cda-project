@@ -109,41 +109,41 @@ void Step(void)
 	/* fetch instruction from memory */
 	Halt = instruction_fetch(PC,Mem,&instruction);
 
-	if(!Halt)
-	{
-		/* partition the instruction */
-		instruction_partition(instruction,&op,&r1,&r2,&r3,&funct,&offset,&jsec);
+	// if(!Halt)
+	// {
+	// 	/* partition the instruction */
+	// 	instruction_partition(instruction,&op,&r1,&r2,&r3,&funct,&offset,&jsec);
 
-		/* instruction decode */
-		Halt = instruction_decode(op,&controls);
-	}
+	// 	/* instruction decode */
+	// 	Halt = instruction_decode(op,&controls);
+	// }
 
-	if(!Halt)
-	{
-		/* read_register */
-		read_register(r1,r2,Reg,&data1,&data2);
+	// if(!Halt)
+	// {
+	// 	/* read_register */
+	// 	read_register(r1,r2,Reg,&data1,&data2);
 
-		/* sign_extend */
-		sign_extend(offset,&extended_value);
+	// 	/* sign_extend */
+	// 	sign_extend(offset,&extended_value);
 
-		/* ALU */
-		Halt = ALU_operations(data1,data2,extended_value,funct,controls.ALUOp,controls.ALUSrc,&ALUresult,&Zero);
-	}
+	// 	/* ALU */
+	// 	Halt = ALU_operations(data1,data2,extended_value,funct,controls.ALUOp,controls.ALUSrc,&ALUresult,&Zero);
+	// }
 
-	if(!Halt)
-	{
-		/* read/write memory */
-		Halt = rw_memory(ALUresult,data2,controls.MemWrite,controls.MemRead,&memdata,Mem);
-	}
+	// if(!Halt)
+	// {
+	// 	/* read/write memory */
+	// 	Halt = rw_memory(ALUresult,data2,controls.MemWrite,controls.MemRead,&memdata,Mem);
+	// }
 
-	if(!Halt)
-	{
-		/* write to register */
-		write_register(r2,r3,memdata,ALUresult,controls.RegWrite,controls.RegDst,controls.MemtoReg,Reg);
+	// if(!Halt)
+	// {
+	// 	/* write to register */
+	// 	write_register(r2,r3,memdata,ALUresult,controls.RegWrite,controls.RegDst,controls.MemtoReg,Reg);
 
-		/* PC update */
+	// 	/* PC update */
 		PC_update(jsec,extended_value,controls.Branch,controls.Jump,Zero,&PC);
-	}
+	// }
 }
 
 void DumpReg(void)
