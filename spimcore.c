@@ -106,6 +106,7 @@ void DisplayControlSignals(void)
 
 void Step(void)
 {
+	//TODO UNCOMMENT THIS SHIT
 	/* fetch instruction from memory */
 	Halt = instruction_fetch(PC,Mem,&instruction);
 
