@@ -106,45 +106,49 @@ void DisplayControlSignals(void)
 
 void Step(void)
 {
-	//TODO UNCOMMENT THIS SHIT
 	/* fetch instruction from memory */
 	Halt = instruction_fetch(PC,Mem,&instruction);
 
-	// if(!Halt)
-	// {
-	// 	/* partition the instruction */
-	// 	instruction_partition(instruction,&op,&r1,&r2,&r3,&funct,&offset,&jsec);
+	if(!Halt)
+	{
+		/* partition the instruction */
+		instruction_partition(instruction,&op,&r1,&r2,&r3,&funct,&offset,&jsec);
 
-	// 	/* instruction decode */
-	// 	Halt = instruction_decode(op,&controls);
-	// }
+		/* instruction decode */
+		Halt = instruction_decode(op,&controls);
+	}
 
-	// if(!Halt)
-	// {
-	// 	/* read_register */
-	// 	read_register(r1,r2,Reg,&data1,&data2);
+	if(!Halt)
+	{
+		/* read_register */
+		read_register(r1,r2,Reg,&data1,&data2);
 
-	// 	/* sign_extend */
-	// 	sign_extend(offset,&extended_value);
+		/* sign_extend */
+		sign_extend(offset,&extended_value);
+		//printf("\nstart aluops\n");//#uncomment for debug
+		/* ALU */
+		Halt = ALU_operations(data1,data2,extended_value,funct,controls.ALUOp,controls.ALUSrc,&ALUresult,&Zero);
+		//printf("\nend aluops\n");//#uncomment for debug
+	}
 
-	// 	/* ALU */
-	// 	Halt = ALU_operations(data1,data2,extended_value,funct,controls.ALUOp,controls.ALUSrc,&ALUresult,&Zero);
-	// }
+	if(!Halt)
+	{
+		//printf("\nstart rwmem\n");//#uncomment for debug
+		/* read/write memory */
+		Halt = rw_memory(ALUresult,data2,controls.MemWrite,controls.MemRead,&memdata,Mem);
+		//printf("\nend rwmem\n");//#uncommment for debug
+	}
 
-	// if(!Halt)
-	// {
-	// 	/* read/write memory */
-	// 	Halt = rw_memory(ALUresult,data2,controls.MemWrite,controls.MemRead,&memdata,Mem);
-	// }
-
-	// if(!Halt)
-	// {
-	// 	/* write to register */
-	// 	write_register(r2,r3,memdata,ALUresult,controls.RegWrite,controls.RegDst,controls.MemtoReg,Reg);
-
-	// 	/* PC update */
+	if(!Halt)
+	{
+		//printf("\nstart wr\n");//#uncomment for debug
+		/* write to register */
+		write_register(r2,r3,memdata,ALUresult,controls.RegWrite,controls.RegDst,controls.MemtoReg,Reg);
+		//printf("\nend wr, start pc up");//#uncomment for debug
+		/* PC update */
 		PC_update(jsec,extended_value,controls.Branch,controls.Jump,Zero,&PC);
-	// }
+		//printf("\nend pc up\n");//#uncomment for debug
+	}
 }
 
 void DumpReg(void)
