@@ -46,6 +46,18 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
 /* 15 Points */
 int instruction_decode(unsigned op,struct_controls *controls)
 {
+
+    //set all controls to don't care values
+    controls->RegDst = 0b10;
+    controls->Jump = 0b10;
+    controls->Branch = 0b10;
+    controls->MemRead = 0b10;
+    controls->MemtoReg = 0b10;
+    controls->ALUOp = 0b000;
+    controls->MemWrite = 0b10;
+    controls->ALUSrc = 0b10;
+    controls->RegWrite = 0b10;
+
     //shift op 26 bits
     op>>=26;
 
@@ -64,12 +76,17 @@ int instruction_decode(unsigned op,struct_controls *controls)
     switch(op)
     {
         case 002: //jump
-            controls->ALUOp = 0b000;
-            printf("\njump op\n");
+            //printf("\njump op\n");//#uncomment for degub
             controls->Jump = 0b01;
             break;
         case 003: //jump and link
-            controls->ALUOp = 0b000;
+            controls->Jump = 0b01;
+            break;
+        case 004: //branch eq
+            controls->Branch = 0b01;
+            break;
+        case 005: //branch not eq
+            controls->Branch = 0b01;
             break;
         case 010: //addi (subraction?)
             controls->ALUOp = 0b001;
@@ -165,10 +182,20 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 /* 10 Points */
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
+    //Jump bit is on
     if(Jump == 0b01)
-        printf("\njsec: %x", jsec);
+    {
+        printf("\njsec: %x\n", jsec);//#uncomment for debug
+        *PC = 4*jsec;
+    }
+    else
+    {
+        *PC+=4;
+    }
 
-    //temp updater to just advance to the next step
-    *PC+=4;
+    printf("\nCurrent PC count: %x\n", *PC);//#uncomment for debug
+
+    // //temp updater to just advance to the next step
+    // *PC+=4;
 }
 
