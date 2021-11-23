@@ -13,7 +13,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 {
 
-    printf("Current Instruction: %x\n", Mem[PC>>2]); //#uncomment for debug
+    //printf("Current Instruction: %x\n", Mem[PC>>2]); //#uncomment for debug
 
     *instruction = Mem[PC>>2];
     printf("%x", *instruction);
@@ -120,7 +120,9 @@ int instruction_decode(unsigned op,struct_controls *controls)
 /* 5 Points */
 void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigned *data2)
 {
-
+    //printf("\nRegister1: %x(%d)\nRegister2: %x(%d)\n", r1>>21, r2>>16);//#uncomment for debug
+    *data1 = Reg[r1>>21];
+    *data2 = Reg[r2>>16];
 }
 
 
@@ -128,13 +130,37 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 /* 10 Points */
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
-
+    //TODO confirm that all this is is setting extended value equal to offset
+    *extended_value = offset;
 }
 
 /* ALU operations */
 /* 10 Points */
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
+
+    //TODO figure out what Zero pointer and ALUSrc are for
+    //if ALUOp is BEQ
+    switch(ALUOp)
+    {
+        case 0b000: //addition
+            *ALUresult = data1 + data2;
+            return 0;
+        case 0b001: //subtraction
+            *ALUresult = data1 - data2;
+            return 0;
+        case 0b010: //set less than
+            return 0;
+        case 0b011: //set less than unsigned
+            return 0;
+        case 0b100: //AND
+            return 0;
+        case 0b101: //OR
+            return 0;
+        case 0b110: //shift left extended
+            *ALUresult = extended_value << 16;
+            return 0;
+    }
     //if ALUOp is 0b111 then R-type, check if funct is valid
     if(ALUOp == 0b111)
     {
@@ -165,6 +191,10 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 /* 10 Points */
 int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsigned *memdata,unsigned *Mem)
 {
+    //TODO figure out which data is supposed to go to where in memory
+    //if MemWrite or MemRead are asserted and ALUresult isn't an address, HALT
+    if((MemWrite == 0b01 || MemRead == 0b01) && ALUresult%4 != 0)
+        return 1;
 
     //no errors
     return 0;
@@ -175,7 +205,10 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 /* 10 Points */
 void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,char RegWrite,char RegDst,char MemtoReg,unsigned *Reg)
 {
-
+    //TODO figure out where I'm supposed to put the data 
+    r2>>=16;
+    r3>>=11;
+    printf("\nmemdata: %d\nALUresult: %d\nRegWrite: %d\nRegDst: %d\nMemtoReg: %d\n", memdata, ALUresult, RegWrite, RegDst, MemtoReg);
 }
 
 /* PC update */
@@ -187,6 +220,10 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
     {
         printf("\njsec: %x\n", jsec);//#uncomment for debug
         *PC = 4*jsec;
+    }
+    if(Branch == 0b01)
+    {
+
     }
     else
     {
