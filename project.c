@@ -1,5 +1,9 @@
-#include "spimcore.h"
+/*
+ | Hunter Herbst
+ | PID: 5095633
+ */
 
+#include "spimcore.h"
 
 /* ALU */
 /* 10 Points */
